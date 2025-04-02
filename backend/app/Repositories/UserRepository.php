@@ -69,7 +69,7 @@ class UserRepository
     public function getFilteredUsers($filters, $limit, $offset)
     {
         // Cria a query inicial
-        $query = User::query();
+        $query = $this->user->newQuery();
 
         // Aplica filtros, se existirem
         if (!empty($filters['name'])) {

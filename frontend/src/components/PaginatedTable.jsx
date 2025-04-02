@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Table, Button, Spinner, Card } from "react-bootstrap";
 import { fetchPaginatedData } from "../utils/api";
 
-const PaginatedTable = ({ endpoint, filters }) => {
+const PaginatedTable = ({ endpoint, filters, onEdit, onDelete }) => {
   const [data, setData] = useState([]);
   const [columns, setColumns] = useState([]);
   const [offset, setOffset] = useState(0);
@@ -11,7 +11,6 @@ const PaginatedTable = ({ endpoint, filters }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Sempre que os filtros ou o offset mudarem, busca os dados novamente
     fetchData(offset);
   }, [offset, filters]);
 
@@ -20,7 +19,13 @@ const PaginatedTable = ({ endpoint, filters }) => {
       setLoading(true);
       const response = await fetchPaginatedData(endpoint, currentOffset, limit, setLoading, filters);
       setData(response.data); // Atualiza os registros da página atual
-      setColumns(response.columns); // Define as colunas
+      setColumns([
+        ...response.columns,
+        {
+          label: "Ações",
+          field: "actions",
+        },
+      ]); // Adiciona a coluna de ações
       setTotal(response.total); // Total de registros
     } catch (error) {
       console.error("Erro ao buscar dados:", error);
@@ -60,7 +65,12 @@ const PaginatedTable = ({ endpoint, filters }) => {
               <thead>
                 <tr>
                   {columns.map((col, index) => (
-                    <th key={index}>{col.label}</th>
+                    <th
+                      key={index}
+                      className={col.field === "actions" ? "text-center" : ""} // Centraliza o label da coluna de ações
+                    >
+                      {col.label}
+                    </th>
                   ))}
                 </tr>
               </thead>
@@ -68,7 +78,31 @@ const PaginatedTable = ({ endpoint, filters }) => {
                 {data.map((item, index) => (
                   <tr key={index}>
                     {columns.map((col, colIndex) => (
-                      <td key={colIndex}>{item[col.field]}</td>
+                      <td
+                        key={colIndex}
+                        className={col.field === "actions" ? "text-end" : ""} // Alinha a coluna de ações à direita
+                      >
+                        {col.field === "actions" ? (
+                          <div className="d-flex justify-content-end gap-2">
+                            <Button
+                              variant="warning"
+                              size="sm"
+                              onClick={() => onEdit(item)}
+                            >
+                              Editar
+                            </Button>
+                            <Button
+                              variant="danger"
+                              size="sm"
+                              onClick={() => onDelete(item)}
+                            >
+                              Excluir
+                            </Button>
+                          </div>
+                        ) : (
+                          item[col.field]
+                        )}
+                      </td>
                     ))}
                   </tr>
                 ))}

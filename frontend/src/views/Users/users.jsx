@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Form, Row, Col, Button, Container, Card } from "react-bootstrap";
 import PaginatedTable from "../../components/PaginatedTable";
 import { useNavigate } from "react-router-dom";
+import "../../assets/scss/Forms.scss"; // Importa o estilo do formulário
 
 const UsersTable = () => {
   const [nameFilter, setNameFilter] = useState("");
@@ -26,6 +27,17 @@ const UsersTable = () => {
     navigate("/users/new"); // Navega para a tela de cadastro de usuário
   };
 
+  const handleEdit = (user) => {
+    navigate(`/users/edit/${user.id}`); // Navega para a página de edição
+  };
+
+  const handleDelete = (user) => {
+    if (window.confirm(`Tem certeza que deseja excluir o usuário ${user.name}?`)) {
+      console.log("Usuário excluído:", user);
+      // Aqui você pode chamar a API para excluir o usuário
+    }
+  };
+
   return (
     <Container fluid className="py-4">
       <Card className="shadow-sm border-0">
@@ -42,41 +54,41 @@ const UsersTable = () => {
             </Col>
           </Row>
 
-          <Card className="shadow-sm border-0 mb-4">
+          <Card className="shadow-sm border-0 mb-4 form-container">
             <Card.Body>
-              <Row className="mb-3">
+              <Row className="row-spacing">
                 <Col md={6}>
                   <Form.Group controlId="nameFilter">
-                    <Form.Label className="fw-bold text-dark">Filtrar por Nome</Form.Label>
+                    <Form.Label className="form-label">Filtrar por Nome</Form.Label>
                     <Form.Control
                       type="text"
                       placeholder="Digite o nome"
                       value={nameFilter}
                       onChange={(e) => setNameFilter(e.target.value)}
-                      className="shadow-sm"
+                      className="form-control"
                     />
                   </Form.Group>
                 </Col>
                 <Col md={6}>
                   <Form.Group controlId="emailFilter">
-                    <Form.Label className="fw-bold text-dark">Filtrar por E-mail</Form.Label>
+                    <Form.Label className="form-label">Filtrar por E-mail</Form.Label>
                     <Form.Control
                       type="text"
                       placeholder="Digite o e-mail"
                       value={emailFilter}
                       onChange={(e) => setEmailFilter(e.target.value)}
-                      className="shadow-sm"
+                      className="form-control"
                     />
                   </Form.Group>
                 </Col>
               </Row>
 
-              <Row className="justify-content-end">
+              <Row className="justify-content-end row-spacing">
                 <Col xs="auto">
                   <Button
                     variant="primary"
                     size="sm"
-                    className="shadow-sm w-100"
+                    className="form-button btn-primary"
                     onClick={handleFilter}
                   >
                     Filtrar
@@ -86,7 +98,7 @@ const UsersTable = () => {
                   <Button
                     variant="outline-secondary"
                     size="sm"
-                    className="shadow-sm w-100"
+                    className="form-button btn-outline-secondary"
                     onClick={handleClearFilters}
                   >
                     Limpar Filtros
@@ -96,7 +108,12 @@ const UsersTable = () => {
             </Card.Body>
           </Card>
 
-          <PaginatedTable endpoint="/users" filters={filters} />
+          <PaginatedTable
+            endpoint="/users"
+            filters={filters}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
         </Card.Body>
       </Card>
     </Container>
