@@ -71,19 +71,20 @@ export const apiRequestWithToken = async (method, endpoint, data = null, setIsLo
  * @param {number} offset - O deslocamento para os registros (padrão: 0).
  * @param {number} limit - O número de registros por solicitação (padrão: 10).
  * @param {function} setIsLoading - Função opcional para gerenciar estado de carregamento.
+ * @param {object} filters - Filtros adicionais para a solicitação.
  * @returns {Promise} - Retorna os dados da API.
  */
-export const fetchPaginatedData = async (endpoint, offset = 0, limit = 10, setIsLoading = null) => {
+export const fetchPaginatedData = async (endpoint, offset = 0, limit = 10, setIsLoading = null, filters = {}) => {
     try {
-        if (setIsLoading && typeof setIsLoading === "function") setIsLoading(true); // Ativa o carregamento, se fornecido
+        if (setIsLoading && typeof setIsLoading === "function") setIsLoading(true);
 
-        const token = localStorage.getItem("token"); // Obtém o token do localStorage
-
-        const response = await fetch(`${BASE_URL}${endpoint}?offset=${offset}&limit=${limit}`, {
+        // Constrói os parâmetros da URL com os filtros
+        const queryParams = new URLSearchParams({ offset, limit, ...filters }).toString();
+        const response = await fetch(`${BASE_URL}${endpoint}?${queryParams}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`, // Adiciona o token no cabeçalho
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
         });
 
@@ -92,10 +93,10 @@ export const fetchPaginatedData = async (endpoint, offset = 0, limit = 10, setIs
             throw new Error(errorData.message || "Request failed");
         }
 
-        return await response.json(); // Retorna os dados da API
+        return await response.json();
     } catch (error) {
         throw new Error(error.message);
     } finally {
-        if (setIsLoading && typeof setIsLoading === "function") setIsLoading(false); // Desativa o carregamento, se fornecido
+        if (setIsLoading && typeof setIsLoading === "function") setIsLoading(false);
     }
 };

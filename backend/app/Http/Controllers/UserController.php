@@ -44,25 +44,28 @@ class UserController extends Controller
         $limit = $request->get('limit', 10); // Número de registros por página (padrão: 10)
         $offset = $request->get('offset', 0); // Deslocamento inicial (padrão: 0)
 
-        // Busca os usuários com base no limite e deslocamento
-        $users = User::skip($offset)->take($limit)->get();
-
-        // Conta o total de registros na tabela
-        $total = User::count();
-
-        // Define as colunas dinamicamente
-        $columns = [
-            ['label' => 'ID', 'field' => 'id'],
-            ['label' => 'Nome', 'field' => 'name'],
-            ['label' => 'Email', 'field' => 'email'],
-            ['label' => 'Criado em', 'field' => 'created_at'],
+        // Obtém os filtros da requisição
+        $filters = [
+            'name' => $request->get('name'),
+            'email' => $request->get('email'),
         ];
+
+        // Chama o método da UserRepository para buscar os dados
+        $result = $this->userRepository->getFilteredUsers($filters, $limit, $offset);
+
+        // Define as colunas dinamicamente com base nos atributos do modelo
+        $columns = collect($result['users']->first())->keys()->map(function ($key) {
+            return [
+                'label' => ucfirst(str_replace('_', ' ', $key)), // Formata o nome da coluna
+                'field' => $key,
+            ];
+        });
 
         // Retorna os dados no formato esperado pelo frontend
         return response()->json([
-            'data' => $users, // Dados da página atual
+            'data' => $result['users'], // Dados da página atual
             'columns' => $columns, // Colunas da tabela
-            'total' => $total, // Total de registros
+            'total' => $result['total'], // Total de registros
             'offset' => $offset, // Deslocamento atual
             'limit' => $limit, // Número de registros por página
         ]);

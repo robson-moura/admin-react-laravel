@@ -65,4 +65,33 @@ class UserRepository
 
         return $user->delete();
     }
+
+    public function getFilteredUsers($filters, $limit, $offset)
+    {
+        // Cria a query inicial
+        $query = User::query();
+
+        // Aplica filtros, se existirem
+        if (!empty($filters['name'])) {
+            $query->where('name', 'like', '%' . $filters['name'] . '%');
+        }
+
+        if (!empty($filters['email'])) {
+            $query->where('email', 'like', '%' . $filters['email'] . '%');
+        }
+
+        // Seleciona apenas os campos desejados
+        $query->select(['id', 'name', 'email', 'created_at']);
+
+        // Conta o total de registros considerando os filtros
+        $total = $query->count();
+
+        // Aplica paginação
+        $users = $query->skip($offset)->take($limit)->get();
+
+        return [
+            'users' => $users,
+            'total' => $total,
+        ];
+    }
 }

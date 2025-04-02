@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Table, Button, Spinner, Card } from "react-bootstrap";
 import { fetchPaginatedData } from "../utils/api";
 
-const PaginatedTable = ({ endpoint }) => {
+const PaginatedTable = ({ endpoint, filters }) => {
   const [data, setData] = useState([]);
   const [columns, setColumns] = useState([]);
   const [offset, setOffset] = useState(0);
@@ -11,17 +11,21 @@ const PaginatedTable = ({ endpoint }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    // Sempre que os filtros ou o offset mudarem, busca os dados novamente
     fetchData(offset);
-  }, [offset]);
+  }, [offset, filters]);
 
   const fetchData = async (currentOffset) => {
     try {
-      const response = await fetchPaginatedData(endpoint, currentOffset, limit, setLoading);
+      setLoading(true);
+      const response = await fetchPaginatedData(endpoint, currentOffset, limit, setLoading, filters);
       setData(response.data); // Atualiza os registros da página atual
       setColumns(response.columns); // Define as colunas
       setTotal(response.total); // Total de registros
     } catch (error) {
       console.error("Erro ao buscar dados:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
