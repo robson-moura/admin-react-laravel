@@ -1,0 +1,66 @@
+const BASE_URL = import.meta.env.VITE_BASE_URL; // URL base do sistema
+
+// Função para requisições sem token
+export const apiRequest = async (method, endpoint, data = null, setIsLoading = null) => {
+    try {
+        if (setIsLoading && typeof setIsLoading === "function") setIsLoading(true); // Ativa o carregamento, se fornecido
+
+        const options = {
+            method,
+            headers: {
+                "Content-Type": "application/json",
+            },
+        };
+
+        if (data) {
+            options.body = JSON.stringify(data);
+        }
+
+        const response = await fetch(`${BASE_URL}${endpoint}`, options);
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Request failed");
+        }
+
+        return await response.json();
+    } catch (error) {
+        throw new Error(error.message);
+    } finally {
+        if (setIsLoading && typeof setIsLoading === "function") setIsLoading(false); // Desativa o carregamento, se fornecido
+    }
+};
+
+// Função para requisições autenticadas (com token)
+export const apiRequestWithToken = async (method, endpoint, data = null, setIsLoading = null) => {
+    try {
+        if (setIsLoading && typeof setIsLoading === "function") setIsLoading(true); // Ativa o carregamento, se fornecido
+
+        const token = localStorage.getItem("token"); // Obtém o token do localStorage
+
+        const options = {
+            method,
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`, // Adiciona o token no cabeçalho
+            },
+        };
+
+        if (data) {
+            options.body = JSON.stringify(data);
+        }
+
+        const response = await fetch(`${BASE_URL}${endpoint}`, options);
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Request failed");
+        }
+
+        return await response.json();
+    } catch (error) {
+        throw new Error(error.message);
+    } finally {
+        if (setIsLoading && typeof setIsLoading === "function") setIsLoading(false); // Desativa o carregamento, se fornecido
+    }
+};

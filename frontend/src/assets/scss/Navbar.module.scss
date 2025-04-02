@@ -1,0 +1,62 @@
+@import "./variable.scss";
+
+.navbars_wrapper {
+    margin-bottom: 32px;
+    .minimize_btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        row-gap: 3px;
+        padding: 0;
+        span {
+            position: relative;
+            display: block;
+            width: 25px;
+            height: 4px;
+            border-radius: 4px;
+            background-color: var(--hedging-text-color);
+        }
+        &.minimize_active {
+            span {
+                &:nth-child(2) {
+                    width: 18px;
+                }
+            }
+        }
+    }
+    ul {
+        display: flex;
+        align-items: center;
+        li {
+            padding: 0 8px;
+            button {
+                position: relative;
+                i {
+                    font-size: 16px;
+                    color: var(--hedging-text-color);
+                }
+                .count {
+                    position: absolute;
+                    top: 0;
+                    right: -5px;
+                    width: 16px;
+                    height: 16px;
+                    font-size: 11px;
+                    color: white;
+                    line-height: 15px;
+                    border-radius: 50%;
+                    border: 1.5px solid var(--bg-content);
+                }
+            }
+            .user_profile {
+                a {
+                    img {
+                        width: 32px;
+                        height: 32px;
+                        border-radius: 50%;
+                    }
+                }
+            }
+        }
+    }
+}

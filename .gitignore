@@ -1,0 +1,21 @@
+# Backend
+/backend/vendor/
+/backend/node_modules/
+/backend/storage/
+/backend/bootstrap/cache/
+/backend/mysql/
+
+# Frontend
+/frontend/node_modules/
+/frontend/build/
+/frontend/dist/
+
+# General
+.DS_Store
+Thumbs.db
+*.log
+*.lock
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
