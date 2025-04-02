@@ -38,10 +38,34 @@ class UserController extends Controller
      *     )
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = $this->userRepository->getAll();
-        return response()->json($users);
+        // Obtém os parâmetros de limite e deslocamento da requisição
+        $limit = $request->get('limit', 10); // Número de registros por página (padrão: 10)
+        $offset = $request->get('offset', 0); // Deslocamento inicial (padrão: 0)
+
+        // Busca os usuários com base no limite e deslocamento
+        $users = User::skip($offset)->take($limit)->get();
+
+        // Conta o total de registros na tabela
+        $total = User::count();
+
+        // Define as colunas dinamicamente
+        $columns = [
+            ['label' => 'ID', 'field' => 'id'],
+            ['label' => 'Nome', 'field' => 'name'],
+            ['label' => 'Email', 'field' => 'email'],
+            ['label' => 'Criado em', 'field' => 'created_at'],
+        ];
+
+        // Retorna os dados no formato esperado pelo frontend
+        return response()->json([
+            'data' => $users, // Dados da página atual
+            'columns' => $columns, // Colunas da tabela
+            'total' => $total, // Total de registros
+            'offset' => $offset, // Deslocamento atual
+            'limit' => $limit, // Número de registros por página
+        ]);
     }
 
     /**

@@ -16,6 +16,7 @@ import Maps from "./views/Maps";
 import Login from "./views/Login";
 import Register from "./views/Register";
 import Page404 from "./views/Error404";
+import Users from "./views/Users/users";
 
 const routes = [
     // Rotas Públicas (sem layout)
@@ -40,6 +41,7 @@ const routes = [
     { path: "/widgets", component: Widgets, private: true },
     { path: "/charts", component: Charts, private: true },
     { path: "/maps", component: Maps, private: true },
+    { path: "/users", component: Users, private: true },
 ];
 
 export default routes;
