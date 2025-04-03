@@ -4,6 +4,7 @@ import { Form, Button, Container, Card, Row, Col } from "react-bootstrap";
 import { apiRequestWithToken, fetchAddressByCep } from "../../utils/api"; // Importa a função de busca de CEP
 import { isValidCPF } from "../../utils/functions";
 import InputMask from "react-input-mask"; // Importa a biblioteca
+import { useLoading } from "@/context/LoadingContext";
 
 const UserForm = () => {
   const { id, mode } = useParams(); // Lê os parâmetros da URL
@@ -28,6 +29,7 @@ const UserForm = () => {
   const [errors, setErrors] = useState({});
   const [isViewMode, setIsViewMode] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const { setIsLoading } = useLoading(); // Obtém o setIsLoading do contexto
 
   useEffect(() => {
     if (mode === "view") {
@@ -46,7 +48,12 @@ const UserForm = () => {
 
   const fetchUserData = async (userId) => {
     try {
-      const response = await apiRequestWithToken("GET", `/users/${userId}`);
+      const response = await apiRequestWithToken(
+        "GET",
+        `/users/${userId}`,
+        null,
+        setIsLoading
+      );
       setUserData(response); // Atualiza os dados do usuário
     } catch (error) {
       console.error("Erro ao buscar os dados do usuário:", error);
@@ -96,7 +103,7 @@ const UserForm = () => {
     const newErrors = {};
 
     // Remove a máscara do CPF antes de validar
-    const cpf = userData.cpf.replace(/[^\d]+/g, ""); // Remove caracteres não numéricos
+    const cpf = (userData.cpf || "").replace(/[^\d]+/g, ""); // Remove caracteres não numéricos
 
     if (!userData.name) newErrors.name = "O campo Nome é obrigatório.";
     if (!userData.email) newErrors.email = "O campo E-mail é obrigatório.";
@@ -128,10 +135,15 @@ const UserForm = () => {
 
     try {
       if (isEditMode) {
-        await apiRequestWithToken("PUT", `/users/${id}`, userData);
+        await apiRequestWithToken(
+          "PUT",
+          `/users/${id}`,
+          userData,
+          setIsLoading
+        );
         alert("Usuário atualizado com sucesso!");
       } else {
-        await apiRequestWithToken("POST", `/users`, userData);
+        await apiRequestWithToken("POST", `/users`, userData, setIsLoading);
         alert("Usuário cadastrado com sucesso!");
         setUserData({
           name: "",
