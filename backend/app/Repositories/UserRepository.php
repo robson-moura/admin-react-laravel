@@ -28,36 +28,35 @@ class UserRepository
         return $this->user->all();
     }
 
-    public function findById($id)
+    public function findById(int $id)
     {
-        return $this->user->find($id);
+        return User::find($id);
     }
 
     public function create(array $data)
     {
         $data['password'] = Hash::make($data['password']);
-        return $this->user->create($data);
+        return User::create($data);
     }
 
-    public function update($id, array $data)
+    public function update(int $id, array $data)
     {
-        $user = $this->user->find($id);
+        $user = $this->findById($id);
 
         if (!$user) {
-            return null;
+            return false;
         }
 
         if (isset($data['password'])) {
             $data['password'] = Hash::make($data['password']);
         }
 
-        $user->update($data);
-        return $user;
+        return $user->update($data);
     }
 
-    public function delete($id)
+    public function delete(int $id)
     {
-        $user = $this->user->find($id);
+        $user = $this->findById($id);
 
         if (!$user) {
             return false;
@@ -66,12 +65,19 @@ class UserRepository
         return $user->delete();
     }
 
-    public function getFilteredUsers($filters, $limit, $offset)
+    /**
+     * Obtém todos os usuários com filtros opcionais.
+     *
+     * @param array $filters
+     * @param int $limit
+     * @param int $offset
+     * @return array
+     */
+    public function getFilteredUsers(array $filters, int $limit = 10, int $offset = 0)
     {
-        // Cria a query inicial
-        $query = $this->user->newQuery();
+        $query = User::query();
 
-        // Aplica filtros, se existirem
+        // Aplica filtros
         if (!empty($filters['name'])) {
             $query->where('name', 'like', '%' . $filters['name'] . '%');
         }
@@ -80,18 +86,24 @@ class UserRepository
             $query->where('email', 'like', '%' . $filters['email'] . '%');
         }
 
+        if (!empty($filters['cpf'])) {
+            $query->where('cpf', $filters['cpf']);
+        }
+
+        if (!empty($filters['phone'])) {
+            $query->where('phone', 'like', '%' . $filters['phone'] . '%');
+        }
+
         // Seleciona apenas os campos desejados
-        $query->select(['id', 'name', 'email', 'created_at']);
+        $query->select('id', 'name', 'cpf', 'phone', 'created_at');
 
-        // Conta o total de registros considerando os filtros
+        // Paginação
         $total = $query->count();
-
-        // Aplica paginação
-        $users = $query->skip($offset)->take($limit)->get();
+        $users = $query->limit($limit)->offset($offset)->get();
 
         return [
-            'users' => $users,
             'total' => $total,
+            'users' => $users,
         ];
     }
 }

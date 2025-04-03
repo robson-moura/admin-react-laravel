@@ -5,10 +5,10 @@
     "type": "module",
     "keywords": [],
     "scripts": {
-        "dev": "vite", 
-        "build": "vite build", 
-        "preview": "vite preview", 
-        "test": "jest" 
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "test": "jest"
     },
     "dependencies": {
         "@entypo-icons/react": "^1.0.4",
@@ -30,6 +30,7 @@
         "react-chartjs-2": "^5.2.0",
         "react-countup": "^6.5.0",
         "react-dom": "^18.2.0",
+        "react-input-mask": "^2.0.4",
         "react-router-dom": "^6.21.1",
         "recharts": "^2.10.3",
         "sass": "^1.69.7",

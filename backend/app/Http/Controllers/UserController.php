@@ -94,8 +94,12 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
-        $user = $this->userRepository->create($request->validated());
-        return response()->json($user, 201);
+        $validatedData = $request->validated(); // Obtém os dados validados
+
+        // Usa o repositório para criar o usuário
+        $user = $this->userRepository->create($validatedData);
+
+        return response()->json(['message' => 'Usuário criado com sucesso!', 'user' => $user], 201);
     }
 
     /**
@@ -157,13 +161,16 @@ class UserController extends Controller
      */
     public function update(UserRequest $request, $id)
     {
-        $user = $this->userRepository->update($id, $request->validated());
+        $validatedData = $request->validated(); // Obtém os dados validados
 
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
+        // Usa o repositório para atualizar o usuário
+        $updated = $this->userRepository->update($id, $validatedData);
+
+        if (!$updated) {
+            return response()->json(['message' => 'Usuário não encontrado.'], 404);
         }
 
-        return response()->json($user);
+        return response()->json(['message' => 'Usuário atualizado com sucesso!'], 200);
     }
 
     /**

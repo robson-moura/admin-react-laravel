@@ -17,6 +17,7 @@ import Login from "./views/Login";
 import Register from "./views/Register";
 import Page404 from "./views/Error404";
 import Users from "./views/Users/users";
+import UserForm from "./views/Users/userForm"; 
 
 const routes = [
     // Rotas Públicas (sem layout)
@@ -42,6 +43,11 @@ const routes = [
     { path: "/charts", component: Charts, private: true },
     { path: "/maps", component: Maps, private: true },
     { path: "/users", component: Users, private: true },
+
+    // Rotas para Cadastro, Edição e Visualização de Usuários
+    { path: "/users/:mode", component: UserForm, private: true }, // Cadastro
+    { path: "/users/:mode/:id", component: UserForm, private: true }, // Edição
+    { path: "/users/:mode/:id", component: UserForm, private: true }, // Visualização
 ];
 
 export default routes;
