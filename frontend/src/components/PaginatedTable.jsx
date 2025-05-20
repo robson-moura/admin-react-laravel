@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button, Spinner, Card } from "react-bootstrap";
 import { fetchPaginatedData } from "../utils/api";
+import { FaEye, FaEdit, FaTrash } from "react-icons/fa"; // Importa os ícones
 
-const PaginatedTable = ({ endpoint, filters, onEdit, onDelete }) => {
+const PaginatedTable = ({ endpoint, filters, onEdit, onDelete, onView}) => {
   const [data, setData] = useState([]);
   const [columns, setColumns] = useState([]);
   const [offset, setOffset] = useState(0);
@@ -84,21 +85,25 @@ const PaginatedTable = ({ endpoint, filters, onEdit, onDelete }) => {
                       >
                         {col.field === "actions" ? (
                           <div className="d-flex justify-content-end gap-2">
-                            <Button
-                              variant="warning"
-                              size="sm"
-                              onClick={() => onEdit(item)}
-                            >
-                              Editar
-                            </Button>
-                            <Button
-                              variant="danger"
-                              size="sm"
-                              onClick={() => onDelete(item)}
-                            >
-                              Excluir
-                            </Button>
-                          </div>
+                          <FaEye
+                            size={18}
+                            style={{ cursor: "pointer", color: "#0d6efd" }} // Ícone de Visualizar
+                            onClick={() => onView(item)}
+                            title="Visualizar"
+                          />
+                          <FaEdit
+                            size={18}
+                            style={{ cursor: "pointer", color: "#ffc107" }} // Ícone de Editar
+                            onClick={() => onEdit(item)}
+                            title="Editar"
+                          />
+                          <FaTrash
+                            size={18}
+                            style={{ cursor: "pointer", color: "#dc3545" }} // Ícone de Excluir
+                            onClick={() => onDelete(item)}
+                            title="Excluir"
+                          />
+                        </div>
                         ) : (
                           item[col.field]
                         )}

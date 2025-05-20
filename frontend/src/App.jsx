@@ -7,6 +7,9 @@ import { DashboardDataProvider } from "@/context/dashboardDataContext.jsx";
 import { LoadingProvider } from "@/context/LoadingContext"; // Importa o LoadingProvider
 import LoadingSpinner from "@/components/LoadingSpinner"; // Importa o componente de carregamento
 import PrivateRoute from "@/components/PrivateRoute"; // Importa o componente de rotas privadas
+import 'react-toastify/dist/ReactToastify.css'; // Importando o CSS
+import { ToastContainer } from 'react-toastify'; // Importa o ToastContainer
+import 'react-toastify/dist/ReactToastify.css'; // Importando o CSS
 
 function App() {
     return (
@@ -57,6 +60,7 @@ function App() {
                     </DashboardDataProvider>
                 </div>
             </div>
+            <ToastContainer />
         </LoadingProvider>
     );
 }

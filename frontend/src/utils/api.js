@@ -8,6 +8,7 @@ export const apiRequest = async (method, endpoint, data = null, setIsLoading = n
         const options = {
             method,
             headers: {
+                "Accept": "application/json",
                 "Content-Type": "application/json",
             },
         };
@@ -41,6 +42,7 @@ export const apiRequestWithToken = async (method, endpoint, data = null, setIsLo
         const options = {
             method,
             headers: {
+                "Accept": "application/json",
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`, // Adiciona o token no cabeçalho
             },
@@ -83,6 +85,7 @@ export const fetchPaginatedData = async (endpoint, offset = 0, limit = 10, setIs
         const response = await fetch(`${BASE_URL}${endpoint}?${queryParams}`, {
             method: "GET",
             headers: {
+                "Accept": "application/json",
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
             },

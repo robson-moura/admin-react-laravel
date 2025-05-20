@@ -3,11 +3,16 @@ import { Form, Row, Col, Button, Container, Card } from "react-bootstrap";
 import PaginatedTable from "../../components/PaginatedTable";
 import { useNavigate } from "react-router-dom";
 import "../../assets/scss/Forms.scss"; // Importa o estilo do formulário
+import { apiRequestWithToken } from "../../utils/api"; // Importa a função de busca de CEP
+import { toast } from "react-toastify"; // Importando o React-Toastify
+import "react-toastify/dist/ReactToastify.css"; // Importando o CSS
+import { useLoading } from "@/context/LoadingContext";
 
 const UsersTable = () => {
   const [nameFilter, setNameFilter] = useState("");
   const [emailFilter, setEmailFilter] = useState("");
   const [filters, setFilters] = useState({});
+  const { setIsLoading } = useLoading(); // Obtém o setIsLoading do contexto
   const navigate = useNavigate();
 
   const handleFilter = () => {
@@ -31,10 +36,25 @@ const UsersTable = () => {
     navigate(`/users/edit/${user.id}`); // Navega para a página de edição
   };
 
-  const handleDelete = (user) => {
+  const handleView = (user) => {
+    navigate(`/users/view/${user.id}`); // Navega para a página de visualização
+  };
+
+  const handleDelete = async (user) => {
     if (window.confirm(`Tem certeza que deseja excluir o usuário ${user.name}?`)) {
-      console.log("Usuário excluído:", user);
-      // Aqui você pode chamar a API para excluir o usuário
+      try {
+        const response = await apiRequestWithToken(
+          "DELETE",
+          `/users/${user.id}`,
+          null,
+          setIsLoading
+        );
+        toast.success("Usuário excluído com sucesso!");
+        setFilters((prevFilters) => ({ ...prevFilters })); // Atualiza os filtros para recarregar a tabela
+      } catch (error) {
+        console.error("Erro ao excluir o usuário:", error);
+        toast.error("Erro ao excluir o usuário. Verifique sua conexão ou tente novamente.");
+      }
     }
   };
 
@@ -113,6 +133,7 @@ const UsersTable = () => {
             filters={filters}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onView={handleView}
           />
         </Card.Body>
       </Card>

@@ -78,12 +78,7 @@ const Login = () => {
                             {loading ? "Carregando..." : "Entrar"} {/* Mostra "Carregando..." enquanto carrega */}
                         </button>
                     </div>
-                </form>
-                <div className="text-center mt-3">
-                    <Link to="/register" className="text-link">
-                        Criar Conta
-                    </Link>
-                </div>
+                </form>     
             </div>
         </div>
     );

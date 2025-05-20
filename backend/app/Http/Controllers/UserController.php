@@ -43,31 +43,42 @@ class UserController extends Controller
         // Obtém os parâmetros de limite e deslocamento da requisição
         $limit = $request->get('limit', 10); // Número de registros por página (padrão: 10)
         $offset = $request->get('offset', 0); // Deslocamento inicial (padrão: 0)
-
+    
         // Obtém os filtros da requisição
         $filters = [
             'name' => $request->get('name'),
             'email' => $request->get('email'),
         ];
-
+    
         // Chama o método da UserRepository para buscar os dados
         $result = $this->userRepository->getFilteredUsers($filters, $limit, $offset);
-
+    
+        // Mapeamento manual dos dados
+        $mappedUsers = $result['users']->map(function ($user) {
+            return [
+                'id' => $user->id,
+                'nome' => $user->name,             // 'name' mapeado para 'nome'
+                'cpf' => $user->cpf,               // 'cpf' permanece igual
+                'telefone' => $user->phone,        // 'phone' mapeado para 'telefone'
+                'e-mail' => $user->email,           // 'email' permanece igual
+            ];
+        });
+    
         // Define as colunas dinamicamente com base nos atributos do modelo
-        $columns = collect($result['users']->first())->keys()->map(function ($key) {
+        $columns = collect($mappedUsers->first())->keys()->map(function ($key) {
             return [
                 'label' => ucfirst(str_replace('_', ' ', $key)), // Formata o nome da coluna
                 'field' => $key,
             ];
         });
-
+    
         // Retorna os dados no formato esperado pelo frontend
         return response()->json([
-            'data' => $result['users'], // Dados da página atual
-            'columns' => $columns, // Colunas da tabela
+            'data' => $mappedUsers, // Dados mapeados
+            'columns' => $columns,  // Colunas
             'total' => $result['total'], // Total de registros
-            'offset' => $offset, // Deslocamento atual
-            'limit' => $limit, // Número de registros por página
+            'offset' => $offset,   // Deslocamento atual
+            'limit' => $limit,     // Número de registros por página
         ]);
     }
 
@@ -93,7 +104,8 @@ class UserController extends Controller
      * )
      */
     public function store(UserRequest $request)
-    {
+    {        
+   
         $validatedData = $request->validated(); // Obtém os dados validados
 
         // Usa o repositório para criar o usuário
@@ -161,6 +173,7 @@ class UserController extends Controller
      */
     public function update(UserRequest $request, $id)
     {
+    
         $validatedData = $request->validated(); // Obtém os dados validados
 
         // Usa o repositório para atualizar o usuário
@@ -187,7 +200,7 @@ class UserController extends Controller
      *     ),
      *     @OA\Response(
      *         response=204,
-     *         description="User deleted successfully"
+     *         description="Usuário Removido com sucesso"
      *     )
      * )
      */
@@ -196,9 +209,9 @@ class UserController extends Controller
         $deleted = $this->userRepository->delete($id);
 
         if (!$deleted) {
-            return response()->json(['message' => 'User not found'], 404);
+            return response()->json(['message' => 'Usuário não encontrado.'], 404);
         }
 
-        return response()->json(null, 204);
+        return response()->json(['message' => 'Usuário Removido com sucesso!'], 200);
     }
 }

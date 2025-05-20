@@ -5,6 +5,8 @@ import { apiRequestWithToken, fetchAddressByCep } from "../../utils/api"; // Imp
 import { isValidCPF } from "../../utils/functions";
 import InputMask from "react-input-mask"; // Importa a biblioteca
 import { useLoading } from "@/context/LoadingContext";
+import { toast } from "react-toastify"; // Importando o React-Toastify
+import "react-toastify/dist/ReactToastify.css"; // Importando o CSS
 
 const UserForm = () => {
   const { id, mode } = useParams(); // Lê os parâmetros da URL
@@ -14,9 +16,9 @@ const UserForm = () => {
     email: "",
     cpf: "",
     rg: "",
-    birthDate: "",
+    birth_date: "",
     gender: "",
-    maritalStatus: "",
+    marital_status: "",
     address_street: "",
     address_number: "",
     address_complement: "",
@@ -25,6 +27,7 @@ const UserForm = () => {
     address_state: "",
     address_zip_code: "",
     phone: "",
+    password: "",
   });
   const [errors, setErrors] = useState({});
   const [isViewMode, setIsViewMode] = useState(false);
@@ -56,7 +59,7 @@ const UserForm = () => {
       );
       setUserData(response); // Atualiza os dados do usuário
     } catch (error) {
-      console.error("Erro ao buscar os dados do usuário:", error);
+      toast.error("Erro ao buscar os dados do usuário:", error);
     }
   };
 
@@ -113,11 +116,11 @@ const UserForm = () => {
       newErrors.cpf = "O CPF informado é inválido.";
     }
     if (!userData.rg) newErrors.rg = "O campo RG é obrigatório.";
-    if (!userData.birthDate)
-      newErrors.birthDate = "O campo Data de Nascimento é obrigatório.";
+    if (!userData.birth_date)
+      newErrors.birth_date = "O campo Data de Nascimento é obrigatório.";
     if (!userData.gender) newErrors.gender = "O campo Gênero é obrigatório.";
-    if (!userData.maritalStatus)
-      newErrors.maritalStatus = "O campo Estado Civil é obrigatório.";
+    if (!userData.marital_status)
+      newErrors.marital_status = "O campo Estado Civil é obrigatório.";
     if (!userData.address_street)
       newErrors.address_street = "O campo Logradouro é obrigatório.";
     if (!userData.address_city)
@@ -141,18 +144,18 @@ const UserForm = () => {
           userData,
           setIsLoading
         );
-        alert("Usuário atualizado com sucesso!");
+        toast.success("Usuário atualizado com sucesso!");
       } else {
         await apiRequestWithToken("POST", `/users`, userData, setIsLoading);
-        alert("Usuário cadastrado com sucesso!");
+        toast.success("Usuário cadastrado com sucesso!");
         setUserData({
           name: "",
           email: "",
           cpf: "",
           rg: "",
-          birthDate: "",
+          birth_date: "",
           gender: "",
-          maritalStatus: "",
+          marital_status: "",
           address_street: "",
           address_number: "",
           address_complement: "",
@@ -165,7 +168,7 @@ const UserForm = () => {
       }
       navigate("/users");
     } catch (error) {
-      console.error("Erro ao salvar os dados do usuário:", error);
+      toast.error("Erro ao salvar os dados do usuário:", error);
     }
   };
 
@@ -266,18 +269,18 @@ const UserForm = () => {
             </Row>
             <Row className="mb-3">
               <Col md={6}>
-                <Form.Group controlId="birthDate">
+                <Form.Group controlId="birth_date">
                   <Form.Label>Data de Nascimento</Form.Label>
                   <Form.Control
                     type="date"
-                    name="birthDate"
-                    value={userData.birthDate}
+                    name="birth_date"
+                    value={userData.birth_date}
                     onChange={handleInputChange}
                     disabled={isViewMode}
-                    isInvalid={!!errors.birthDate}
+                    isInvalid={!!errors.birth_date}
                   />
                   <Form.Control.Feedback type="invalid">
-                    {errors.birthDate}
+                    {errors.birth_date}
                   </Form.Control.Feedback>
                 </Form.Group>
               </Col>
@@ -304,14 +307,14 @@ const UserForm = () => {
             </Row>
             <Row className="mb-3">
               <Col md={6}>
-                <Form.Group controlId="maritalStatus">
+                <Form.Group controlId="marital_status">
                   <Form.Label>Estado Civil</Form.Label>
                   <Form.Select
-                    name="maritalStatus"
-                    value={userData.maritalStatus}
+                    name="marital_status"
+                    value={userData.marital_status}
                     onChange={handleInputChange}
                     disabled={isViewMode}
-                    isInvalid={!!errors.maritalStatus}
+                    isInvalid={!!errors.marital_status}
                   >
                     <option value="">Selecione</option>
                     <option value="Solteiro(a)">Solteiro(a)</option>
@@ -320,7 +323,7 @@ const UserForm = () => {
                     <option value="Viúvo(a)">Viúvo(a)</option>
                   </Form.Select>
                   <Form.Control.Feedback type="invalid">
-                    {errors.maritalStatus}
+                    {errors.marital_status}
                   </Form.Control.Feedback>
                 </Form.Group>
               </Col>
@@ -467,7 +470,7 @@ const UserForm = () => {
               <Col xs="auto">
                 <Button
                   variant="outline-secondary"
-                  size="sm"
+                  size="lg"
                   className="form-button btn-outline-secondary"
                   onClick={handleBack}
                 >
@@ -478,7 +481,7 @@ const UserForm = () => {
                 <Col xs="auto">
                   <Button
                     variant="primary"
-                    size="sm"
+                    size="lg"
                     className="form-button btn-primary"
                     onClick={handleSave}
                   >

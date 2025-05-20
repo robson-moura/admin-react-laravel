@@ -35,7 +35,7 @@ class UserRepository
 
     public function create(array $data)
     {
-        $data['password'] = Hash::make($data['password']);
+        $data['password'] = Hash::make('123456');
         return User::create($data);
     }
 
@@ -95,7 +95,7 @@ class UserRepository
         }
 
         // Seleciona apenas os campos desejados
-        $query->select('id', 'name', 'cpf', 'phone', 'created_at');
+        $query->select('id', 'name', 'cpf', 'phone', 'email', 'created_at');
 
         // Paginação
         $total = $query->count();

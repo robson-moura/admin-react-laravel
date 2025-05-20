@@ -34,6 +34,7 @@ class User extends Authenticatable
         'address_city',
         'address_state',
         'address_zip_code',
+        'password'
     ];
 
     /**
