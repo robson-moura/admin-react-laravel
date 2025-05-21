@@ -8,28 +8,30 @@ import { useLoading } from "@/context/LoadingContext";
 import { toast } from "react-toastify"; // Importando o React-Toastify
 import "react-toastify/dist/ReactToastify.css"; // Importando o CSS
 
+const initialUserData = {
+  name: "",
+  email: "",
+  cpf: "",
+  rg: "",
+  birth_date: "",
+  gender: "",
+  marital_status: "",
+  address_street: "",
+  address_number: "",
+  address_complement: "",
+  address_neighborhood: "",
+  address_city: "",
+  address_state: "",
+  address_zip_code: "",
+  phone: "",
+  password: "",
+  photo: null,
+};
+
 const UserForm = () => {
   const { id, mode } = useParams(); // Lê os parâmetros da URL
   const navigate = useNavigate();
-  const [userData, setUserData] = useState({
-    name: "",
-    email: "",
-    cpf: "",
-    rg: "",
-    birth_date: "",
-    gender: "",
-    marital_status: "",
-    address_street: "",
-    address_number: "",
-    address_complement: "",
-    address_neighborhood: "",
-    address_city: "",
-    address_state: "",
-    address_zip_code: "",
-    phone: "",
-    password: "",
-    photo: null, // Adicionado aqui
-  });
+  const [userData, setUserData] = useState(initialUserData);
   const [errors, setErrors] = useState({});
   const [isViewMode, setIsViewMode] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -49,6 +51,7 @@ const UserForm = () => {
     } else {
       setIsViewMode(false);
       setIsEditMode(false);
+      setUserData(initialUserData);
     }
   }, [id, mode]);
 
@@ -88,7 +91,6 @@ const UserForm = () => {
     const file = e.target.files[0];
     if (file) {
       setUserData((prev) => ({ ...prev, photo: file }));
-      setPhotoPreview(URL.createObjectURL(file));
     }
   };
 
@@ -184,25 +186,7 @@ const UserForm = () => {
           true // novo parâmetro para indicar FormData
         );
         toast.success("Usuário cadastrado com sucesso!");
-        setUserData({
-          name: "",
-          email: "",
-          cpf: "",
-          rg: "",
-          birth_date: "",
-          gender: "",
-          marital_status: "",
-          address_street: "",
-          address_number: "",
-          address_complement: "",
-          address_neighborhood: "",
-          address_city: "",
-          address_state: "",
-          address_zip_code: "",
-          phone: "",
-          password: "",
-          photo: null,
-        });
+        setUserData(initialUserData);
       }
       navigate("/users");
     } catch (error) {
