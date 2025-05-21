@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Form, Button, Container, Card, Row, Col } from "react-bootstrap";
 import { apiRequestWithToken, fetchAddressByCep } from "../../utils/api"; // Importa a função de busca de CEP
@@ -28,11 +28,14 @@ const UserForm = () => {
     address_zip_code: "",
     phone: "",
     password: "",
+    photo: null, // Adicionado aqui
   });
   const [errors, setErrors] = useState({});
   const [isViewMode, setIsViewMode] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const { setIsLoading } = useLoading(); // Obtém o setIsLoading do contexto
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const fileInputRef = useRef();
 
   useEffect(() => {
     if (mode === "view") {
@@ -48,6 +51,16 @@ const UserForm = () => {
       setIsEditMode(false);
     }
   }, [id, mode]);
+
+  useEffect(() => {
+    if (userData.photo instanceof File) {
+      setPhotoPreview(URL.createObjectURL(userData.photo));
+    } else if (typeof userData.photo === "string" && userData.photo) {
+      setPhotoPreview(userData.photo);
+    } else {
+      setPhotoPreview(null);
+    }
+  }, [userData.photo]);
 
   const fetchUserData = async (userId) => {
     try {
@@ -69,6 +82,14 @@ const UserForm = () => {
       ...prevData,
       [name]: value,
     }));
+  };
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setUserData((prev) => ({ ...prev, photo: file }));
+      setPhotoPreview(URL.createObjectURL(file));
+    }
   };
 
   const handleCepBlur = async () => {
@@ -137,16 +158,31 @@ const UserForm = () => {
     if (!validateForm()) return;
 
     try {
+      const formData = new FormData();
+      Object.entries(userData).forEach(([key, value]) => {
+        if (value !== null && value !== undefined) {
+          formData.append(key, value);
+        }
+      });
+
       if (isEditMode) {
+        formData.append('_method', 'PUT');
         await apiRequestWithToken(
-          "PUT",
+          "POST", // <-- Use POST aqui!
           `/users/${id}`,
-          userData,
-          setIsLoading
+          formData,
+          setIsLoading,
+          true // novo parâmetro para indicar FormData
         );
         toast.success("Usuário atualizado com sucesso!");
       } else {
-        await apiRequestWithToken("POST", `/users`, userData, setIsLoading);
+        await apiRequestWithToken(
+          "POST",
+          `/users`,
+          formData,
+          setIsLoading,
+          true // novo parâmetro para indicar FormData
+        );
         toast.success("Usuário cadastrado com sucesso!");
         setUserData({
           name: "",
@@ -164,6 +200,8 @@ const UserForm = () => {
           address_state: "",
           address_zip_code: "",
           phone: "",
+          password: "",
+          photo: null,
         });
       }
       navigate("/users");
@@ -180,13 +218,50 @@ const UserForm = () => {
     <Container fluid className="py-4">
       <Card className="shadow-sm border-0">
         <Card.Body>
-          <h1 className="mb-4 text-primary">
-            {isViewMode
-              ? "Visualizar Usuário"
-              : isEditMode
-              ? "Editar Usuário"
-              : "Cadastrar Usuário"}
-          </h1>
+          <Row>
+            <Col>
+              <h1 className="mb-4 text-primary">
+                {isViewMode
+                  ? "Visualizar Usuário"
+                  : isEditMode
+                  ? "Editar Usuário"
+                  : "Cadastrar Usuário"}
+              </h1>
+            </Col>            
+            <Col xs="auto" className="d-flex flex-column align-items-end">
+              <div style={{ width: 120, height: 120, marginBottom: 8, marginTop: 30}}>
+                <img
+                  src={photoPreview || "/default-avatar.png"}
+                  alt="Preview"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    borderRadius: "50%",
+                    border: "1px solid #ccc",
+                  }}
+                />
+              </div>
+              {!isViewMode && (
+                <>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    ref={fileInputRef}
+                    onChange={handlePhotoChange}
+                  />
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => fileInputRef.current.click()}
+                  >
+                    Selecionar Foto
+                  </Button>
+                </>
+              )}
+            </Col>
+          </Row>
           <Form>
             <Row className="mb-3">
               <Col md={6}>

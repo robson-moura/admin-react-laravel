@@ -34,7 +34,8 @@ class User extends Authenticatable
         'address_city',
         'address_state',
         'address_zip_code',
-        'password'
+        'password',
+        'photo'
     ];
 
     /**
@@ -65,5 +66,14 @@ class User extends Authenticatable
     public function getCreatedAtAttribute($value)
     {
         return Carbon::parse($value)->format('d/m/Y');
+    }
+
+    public function getPhotoAttribute($value)
+    {
+        if (!$value) {
+            return null;
+        }
+        // Gera a URL completa
+        return url($value);
     }
 }

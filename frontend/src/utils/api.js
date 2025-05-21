@@ -33,23 +33,24 @@ export const apiRequest = async (method, endpoint, data = null, setIsLoading = n
 };
 
 // Função para requisições autenticadas (com token)
-export const apiRequestWithToken = async (method, endpoint, data = null, setIsLoading = null) => {
+export const apiRequestWithToken = async (method, endpoint, data = null, setIsLoading = null, isFormData = false) => {
     try {
-        if (setIsLoading && typeof setIsLoading === "function") setIsLoading(true); // Ativa o carregamento, se fornecido
+        if (setIsLoading && typeof setIsLoading === "function") setIsLoading(true);
 
-        const token = localStorage.getItem("token"); // Obtém o token do localStorage
+        const token = localStorage.getItem("token");
+        const headers = {};
+        headers["Accept"] = "application/json";
+        
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+        if (!isFormData) headers["Content-Type"] = "application/json";
 
         const options = {
             method,
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`, // Adiciona o token no cabeçalho
-            },
+            headers,
         };
 
         if (data) {
-            options.body = JSON.stringify(data);
+            options.body = isFormData ? data : JSON.stringify(data);
         }
 
         const response = await fetch(`${BASE_URL}${endpoint}`, options);
@@ -63,7 +64,7 @@ export const apiRequestWithToken = async (method, endpoint, data = null, setIsLo
     } catch (error) {
         throw new Error(error.message);
     } finally {
-        if (setIsLoading && typeof setIsLoading === "function") setIsLoading(false); // Desativa o carregamento, se fornecido
+        if (setIsLoading && typeof setIsLoading === "function") setIsLoading(false);
     }
 };
 

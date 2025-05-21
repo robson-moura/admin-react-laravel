@@ -3,6 +3,9 @@ namespace App\Repositories;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class UserRepository
 {
@@ -35,6 +38,15 @@ class UserRepository
 
     public function create(array $data)
     {
+        // Garante que a pasta exista
+        Storage::disk('public')->makeDirectory('users');
+
+        // Trata o upload da foto se for um arquivo
+        if (isset($data['photo']) && $data['photo'] instanceof UploadedFile) {
+            $path = $data['photo']->store('users', 'public');
+            $data['photo'] = '/storage/' . $path;
+        }
+
         $data['password'] = Hash::make('123456');
         return User::create($data);
     }
@@ -47,11 +59,21 @@ class UserRepository
             return false;
         }
 
+        // Garante que a pasta exista
+        Storage::disk('public')->makeDirectory('users');
+
+        // Trata o upload da foto se for um arquivo
+        if (isset($data['photo']) && $data['photo'] instanceof UploadedFile) {
+            $path = $data['photo']->store('users', 'public');
+            $data['photo'] = '/storage/' . $path;
+        }
+
         if (isset($data['password'])) {
             $data['password'] = Hash::make($data['password']);
         }
 
-        return $user->update($data);
+        $user->update($data);
+        return $user;
     }
 
     public function delete(int $id)

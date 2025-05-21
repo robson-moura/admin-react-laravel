@@ -7,6 +7,7 @@ use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\UserRequest;
+use Illuminate\Support\Facades\Log;
 
 /**
  * @OA\Tag(
@@ -173,7 +174,7 @@ class UserController extends Controller
      */
     public function update(UserRequest $request, $id)
     {
-    
+        Log::debug($request); // Log para depuração
         $validatedData = $request->validated(); // Obtém os dados validados
 
         // Usa o repositório para atualizar o usuário

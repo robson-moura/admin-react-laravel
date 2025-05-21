@@ -37,6 +37,7 @@ class UserRequest extends FormRequest
             'address_city' => 'nullable|string|max:255',
             'address_state' => 'nullable|string|max:255',
             'address_zip_code' => 'nullable|string|max:20',
+            'photo' => 'nullable|image|max:2048', 
         ];
     }
 
