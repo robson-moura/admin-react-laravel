@@ -38,6 +38,18 @@ const Layouts = () => {
                         <i className="fa fa-user" />
                         <span>Usuários</span>
                     </MenuItem>
+                    <MenuItem routeLink="/clients">
+                        <i className="fa fa-users" />
+                        <span>Clientes</span>
+                    </MenuItem>
+                    <MenuItem routeLink="/appointments">
+                        <i className="fa fa-stethoscope" /> {/* Ícone de atendimento */}
+                        <span>Atendimentos</span>
+                    </MenuItem>
+                    <MenuItem routeLink="/profiles">
+                        <i className="fa fa-id-badge" />
+                        <span>Perfis</span>
+                    </MenuItem>
                 </Menu>
                 <SidenavUser
                     userImg={userImg}

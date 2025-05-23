@@ -18,6 +18,12 @@ import Register from "./views/Register";
 import Page404 from "./views/Error404";
 import Users from "./views/Users/users";
 import UserForm from "./views/Users/userForm"; 
+import Profiles from "./views/Profiles/profiles";
+import ProfileForm from "./views/Profiles/profileForm";
+import Clients from "./views/Clients/clients";
+import ClientsForm from "./views/Clients/clientsForm";
+import Appointments from "./views/Appointments/appointments";
+import AppointmentsForm from "./views/Appointments/appointmentsForm";
 
 const routes = [
     // Rotas Públicas (sem layout)
@@ -48,6 +54,23 @@ const routes = [
     { path: "/users/:mode", component: UserForm, private: true }, // Cadastro
     { path: "/users/:mode/:id", component: UserForm, private: true }, // Edição
     { path: "/users/:mode/:id", component: UserForm, private: true }, // Visualização
+
+    // Rotas para Perfis
+    { path: "/profiles", component: Profiles, private: true },
+    { path: "/profiles/:mode", component: ProfileForm, private: true },
+    { path: "/profiles/:mode/:id", component: ProfileForm, private: true },
+
+    // Rotas para Clientes
+    { path: "/clients", component: Clients, private: true },
+
+    // Rotas para Cadastro, Edição e Visualização de Clientes
+    { path: "/clients/:mode", component: ClientsForm, private: true }, // Cadastro
+    { path: "/clients/:mode/:id", component: ClientsForm, private: true }, // Edição/Visualização
+
+    // Rotas para Atendimentos
+    { path: "/appointments", component: Appointments, private: true },
+    { path: "/appointments/:mode", component: AppointmentsForm, private: true }, // Cadastro
+    { path: "/appointments/:mode/:id", component: AppointmentsForm, private: true }, // Edição/Visualização
 ];
 
 export default routes;

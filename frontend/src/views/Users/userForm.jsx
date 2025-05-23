@@ -26,6 +26,7 @@ const initialUserData = {
   phone: "",
   password: "",
   photo: null,
+  profile_id: "",
 };
 
 const UserForm = () => {
@@ -38,6 +39,7 @@ const UserForm = () => {
   const { setIsLoading } = useLoading(); // Obtém o setIsLoading do contexto
   const [photoPreview, setPhotoPreview] = useState(null);
   const fileInputRef = useRef();
+  const [profiles, setProfiles] = useState([]);
 
   useEffect(() => {
     if (mode === "view") {
@@ -64,6 +66,21 @@ const UserForm = () => {
       setPhotoPreview(null);
     }
   }, [userData.photo]);
+
+  useEffect(() => {
+    const fetchProfiles = async () => {
+      try {
+        setIsLoading(true);
+        const response = await apiRequestWithToken("GET", "/profiles/combo");
+        setProfiles(response);
+      } catch (error) {
+        toast.error("Erro ao buscar perfis ativos");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchProfiles();
+  }, [setIsLoading]);
 
   const fetchUserData = async (userId) => {
     try {
@@ -151,6 +168,8 @@ const UserForm = () => {
     if (!userData.address_state)
       newErrors.address_state = "O campo Estado é obrigatório.";
     if (!userData.phone) newErrors.phone = "O campo Telefone é obrigatório.";
+    if (!userData.profile_id)
+      newErrors.profile_id = "O campo Perfil é obrigatório.";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -282,7 +301,7 @@ const UserForm = () => {
                   </Form.Control.Feedback>
                 </Form.Group>
               </Col>
-            </Row>
+            </Row>            
             <Row className="mb-3">
               <Col md={6}>
                 <Form.Group controlId="cpf">
@@ -521,6 +540,30 @@ const UserForm = () => {
                   />
                   <Form.Control.Feedback type="invalid">
                     {errors.address_state}
+                  </Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row className="mb-3">
+              <Col md={6}>
+                <Form.Group controlId="profile_id">
+                  <Form.Label>Perfil</Form.Label>
+                  <Form.Select
+                    name="profile_id"
+                    value={userData.profile_id || ""}
+                    onChange={handleInputChange}
+                    disabled={isViewMode}
+                    isInvalid={!!errors.profile_id}
+                  >
+                    <option value="">Selecione o perfil</option>
+                    {profiles.map((profile) => (
+                      <option key={profile.id} value={profile.id}>
+                        {profile.name}
+                      </option>
+                    ))}
+                  </Form.Select>
+                  <Form.Control.Feedback type="invalid">
+                    {errors.profile_id}
                   </Form.Control.Feedback>
                 </Form.Group>
               </Col>
