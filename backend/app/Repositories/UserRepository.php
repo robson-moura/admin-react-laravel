@@ -71,8 +71,9 @@ class UserRepository
         if (isset($data['password'])) {
             $data['password'] = Hash::make($data['password']);
         }
-
         $user->update($data);
+        Log::debug($user); // Log para depuração
+
         return $user;
     }
 

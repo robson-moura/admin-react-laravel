@@ -24,7 +24,7 @@ class UserRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $userId,
-            'cpf' => 'required|cpf|unique:users,cpf,' . $userId, // Validação de CPF
+            'cpf' => 'required|cpf|unique:users,cpf,' . $userId,
             'rg' => 'nullable|string|max:20',
             'birth_date' => 'nullable|date',
             'gender' => 'nullable|string|in:Masculino,Feminino,Outro',
@@ -37,7 +37,8 @@ class UserRequest extends FormRequest
             'address_city' => 'nullable|string|max:255',
             'address_state' => 'nullable|string|max:255',
             'address_zip_code' => 'nullable|string|max:20',
-            'photo' => 'nullable|image|max:2048', 
+            'photo' => 'nullable|max:2048',
+            'profile_id' => 'required|exists:profiles,id', // <-- campo obrigatório
         ];
     }
 
@@ -57,6 +58,8 @@ class UserRequest extends FormRequest
             'birth_date.date' => 'A Data de Nascimento deve ser uma data válida.',
             'gender.in' => 'O campo Gênero deve ser Masculino, Feminino ou Outro.',
             'marital_status.in' => 'O Estado Civil deve ser Solteiro(a), Casado(a), Divorciado(a) ou Viúvo(a).',
+            'profile_id.required' => 'O campo Perfil é obrigatório.', // <-- mensagem personalizada
+            'profile_id.exists' => 'O perfil selecionado não existe.',
         ];
     }
 }

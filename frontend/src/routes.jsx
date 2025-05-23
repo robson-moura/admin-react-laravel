@@ -24,6 +24,7 @@ import Clients from "./views/Clients/clients";
 import ClientsForm from "./views/Clients/clientsForm";
 import Appointments from "./views/Appointments/appointments";
 import AppointmentsForm from "./views/Appointments/appointmentsForm";
+import AppointmentsCalendar from "./views/Appointments/appointmentsCalendar";
 
 const routes = [
     // Rotas Públicas (sem layout)
@@ -71,6 +72,7 @@ const routes = [
     { path: "/appointments", component: Appointments, private: true },
     { path: "/appointments/:mode", component: AppointmentsForm, private: true }, // Cadastro
     { path: "/appointments/:mode/:id", component: AppointmentsForm, private: true }, // Edição/Visualização
+    { path: "/appointments-calendar", component: AppointmentsCalendar, private: true },
 ];
 
 export default routes;

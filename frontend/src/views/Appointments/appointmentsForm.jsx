@@ -1,6 +1,6 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Form, Row, Col, Button, Container, Card, Modal } from "react-bootstrap";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import InputMask from "react-input-mask";
 import Webcam from "react-webcam";
 import { apiRequestWithToken } from "../../utils/api";
@@ -22,8 +22,17 @@ const initialAppointmentData = {
   status: "completed",
 };
 
-const AppointmentsForm = ({ isEditMode = false, isViewMode = false }) => {
-  // Sessão: States
+const AppointmentsForm = () => {
+  const { id, mode } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { setIsLoading } = useLoading();
+
+  // Modo de visualização/edição
+  const [isViewMode, setIsViewMode] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+
+  // States
   const [appointmentData, setAppointmentData] = useState(initialAppointmentData);
   const [errors, setErrors] = useState({});
   const [showWebcam, setShowWebcam] = useState(false);
@@ -32,49 +41,78 @@ const AppointmentsForm = ({ isEditMode = false, isViewMode = false }) => {
   const webcamRef = useRef(null);
   const fileInputRef = useRef(null);
   const afterFileInputRef = useRef(null);
-  const { setIsLoading } = useLoading();
-  const navigate = useNavigate();
-  const { id } = useParams();
 
-  // Sessão: Dados de Selects
+  // Dados de selects
   const [clients, setClients] = useState([]);
   const [users, setUsers] = useState([]);
 
-  // Sessão: Carregamento de Dados
-  React.useEffect(() => {
-    // Carregar clientes
+  // Definir modo
+  useEffect(() => {
+    if (mode === "view") {
+      setIsViewMode(true);
+      setIsEditMode(false);
+      if (id) fetchAppointmentData(id);
+    } else if (mode === "edit") {
+      setIsViewMode(false);
+      setIsEditMode(true);
+      if (id) fetchAppointmentData(id);
+    } else {
+      setIsViewMode(false);
+      setIsEditMode(false);
+      setAppointmentData(initialAppointmentData);
+    }
+    // eslint-disable-next-line
+  }, [id, mode]);
+
+  // Carregar clientes e usuários ativos
+  useEffect(() => {
     apiRequestWithToken("GET", "/clients?limit=1000&status=active").then((res) => {
       setClients(res?.data || []);
     });
-    // Carregar usuários (ajuste para acessar res.data)
     apiRequestWithToken("GET", "/users?limit=1000&status=active").then((res) => {
       setUsers(res?.data || []);
     });
-    // Se for edição, carregar dados do atendimento
-    if (isEditMode || isViewMode) {
-      apiRequestWithToken("GET", `/appointments/${id}`).then((res) => {
-        setAppointmentData({
-          ...res,
-          products_used: Array.isArray(res.products_used)
-            ? res.products_used.join(", ")
-            : res.products_used || "",
-        });
-        setPhotoPreview(res.before_photo || "");
-        setAfterPhotoPreview(res.after_photo || "");
-      });
-    }
-  }, [id, isEditMode, isViewMode]);
+  }, []);
 
-  // Sessão: Handlers de Formulário
+  // Preencher data da URL ao montar
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const dateFromUrl = params.get("date");
+    if (dateFromUrl && !isEditMode && !isViewMode) {
+      setAppointmentData((prev) => ({
+        ...prev,
+        date: dateFromUrl,
+      }));
+    }
+  }, [location.search, isEditMode, isViewMode]);
+
+  // Buscar dados do atendimento
+  const fetchAppointmentData = async (appointmentId) => {
+    try {
+      setIsLoading(true);
+      const res = await apiRequestWithToken("GET", `/appointments/${appointmentId}`);
+      setAppointmentData({
+        ...res,
+        products_used: Array.isArray(res.products_used)
+          ? res.products_used.join(", ")
+          : res.products_used || "",
+      });
+      setPhotoPreview(res.before_photo || "");
+      setAfterPhotoPreview(res.after_photo || "");
+    } catch (error) {
+      toast.error("Erro ao buscar os dados do atendimento.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handlers de formulário
   const handleInputChange = async (e) => {
     const { name, value, type } = e.target;
-
-    // Se selecionar cliente, buscar foto inicial
     if (name === "client_id" && value) {
       try {
         setIsLoading(true);
         const res = await apiRequestWithToken("GET", `/clients/${value}`);
-        // Supondo que a foto inicial esteja em res.before_photo ou res.photo
         const beforePhoto = res.before_photo || res.photo || "";
         setPhotoPreview(beforePhoto || "/default-avatar.png");
         setAppointmentData((prev) => ({
@@ -135,7 +173,7 @@ const AppointmentsForm = ({ isEditMode = false, isViewMode = false }) => {
       });
   };
 
-  // Sessão: Validação
+  // Validação
   const validateForm = () => {
     const newErrors = {};
     if (!appointmentData.client_id) newErrors.client_id = "Cliente obrigatório";
@@ -146,13 +184,12 @@ const AppointmentsForm = ({ isEditMode = false, isViewMode = false }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Sessão: Submit
+  // Submit
   const handleSave = async () => {
     if (!validateForm()) return;
     try {
       setIsLoading(true);
 
-      // products_used pode ser string separada por vírgula ou array
       let productsUsed = appointmentData.products_used;
       if (typeof productsUsed === "string" && productsUsed.trim() !== "") {
         try {
@@ -209,15 +246,16 @@ const AppointmentsForm = ({ isEditMode = false, isViewMode = false }) => {
     }
   };
 
-  // Sessão: Navegação
-  const handleBack = () => navigate("/appointments");
+  // Navegação
+  const handleBack = () => {
+    navigate("/appointments");
+  };
 
-  // Sessão: Renderização
+  // Renderização
   return (
     <Container fluid className="py-4">
       <Card className="shadow-sm border-0">
         <Card.Body>
-          {/* Sessão: Título */}
           <h1 className="mb-4 text-primary">
             {isViewMode
               ? "Visualizar Atendimento"

@@ -24,5 +24,10 @@ export const navItem = [
         path: "/profiles",
         icon: "fa fa-id-badge", 
     },
+    {
+        name: "Agenda",
+        path: "/appointments-calendar",
+        icon: "fa fa-calendar",
+    },
 ];
 

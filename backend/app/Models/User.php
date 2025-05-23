@@ -35,7 +35,8 @@ class User extends Authenticatable
         'address_state',
         'address_zip_code',
         'password',
-        'photo'
+        'photo',
+        'profile_id'
     ];
 
     /**
@@ -75,5 +76,10 @@ class User extends Authenticatable
         }
         // Gera a URL completa
         return url($value);
+    }
+
+    public function profile()
+    {
+        return $this->belongsTo(Profile::class);
     }
 }

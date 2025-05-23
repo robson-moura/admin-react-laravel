@@ -46,6 +46,10 @@ const Layouts = () => {
                         <i className="fa fa-stethoscope" /> {/* Ícone de atendimento */}
                         <span>Atendimentos</span>
                     </MenuItem>
+                    <MenuItem routeLink="/appointments-calendar">
+                        <i className="fa fa-calendar" /> {/* Ícone de calendário */}
+                        <span>Agenda</span>
+                    </MenuItem>
                     <MenuItem routeLink="/profiles">
                         <i className="fa fa-id-badge" />
                         <span>Perfis</span>
