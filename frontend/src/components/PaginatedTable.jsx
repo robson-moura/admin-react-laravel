@@ -62,65 +62,67 @@ const PaginatedTable = ({ endpoint, filters, onEdit, onDelete, onView}) => {
           </div>
         ) : (
           <>
-            <Table striped bordered hover>
-              <thead>
-                <tr>
-                  {columns.map((col, index) => (
-                    <th
-                      key={index}
-                      className={col.field === "actions" ? "text-center" : ""} // Centraliza o label da coluna de ações
-                    >
-                      {col.label}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {data.length === 0 ? (
+            <div className="table-responsive">{/* Adicione esta div */}
+              <Table striped bordered hover>
+                <thead>
                   <tr>
-                    <td colSpan={columns.length} className="text-center py-4">
-                      Nenhum registro
-                    </td>
+                    {columns.map((col, index) => (
+                      <th
+                        key={index}
+                        className={col.field === "actions" ? "text-center" : ""}
+                      >
+                        {col.label}
+                      </th>
+                    ))}
                   </tr>
-                ) : (
-                  data.map((item, index) => (
-                    <tr key={index}>
-                      {columns.map((col, colIndex) => (
-                        <td
-                          key={colIndex}
-                          className={col.field === "actions" ? "text-end" : ""} // Alinha a coluna de ações à direita
-                        >
-                          {col.field === "actions" ? (
-                            <div className="d-flex justify-content-end gap-2">
-                              <FaEye
-                                size={18}
-                                style={{ cursor: "pointer", color: "#0d6efd" }} // Ícone de Visualizar
-                                onClick={() => onView(item)}
-                                title="Visualizar"
-                              />
-                              <FaEdit
-                                size={18}
-                                style={{ cursor: "pointer", color: "#ffc107" }} // Ícone de Editar
-                                onClick={() => onEdit(item)}
-                                title="Editar"
-                              />
-                              <FaTrash
-                                size={18}
-                                style={{ cursor: "pointer", color: "#dc3545" }} // Ícone de Excluir
-                                onClick={() => onDelete(item)}
-                                title="Excluir"
-                              />
-                            </div>
-                          ) : (
-                            item[col.field]
-                          )}
-                        </td>
-                      ))}
+                </thead>
+                <tbody>
+                  {data.length === 0 ? (
+                    <tr>
+                      <td colSpan={columns.length} className="text-center py-4">
+                        Nenhum registro
+                      </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </Table>
+                  ) : (
+                    data.map((item, index) => (
+                      <tr key={index}>
+                        {columns.map((col, colIndex) => (
+                          <td
+                            key={colIndex}
+                            className={col.field === "actions" ? "text-end" : ""}
+                          >
+                            {col.field === "actions" ? (
+                              <div className="d-flex justify-content-end gap-2">
+                                <FaEye
+                                  size={18}
+                                  style={{ cursor: "pointer", color: "#0d6efd" }}
+                                  onClick={() => onView(item)}
+                                  title="Visualizar"
+                                />
+                                <FaEdit
+                                  size={18}
+                                  style={{ cursor: "pointer", color: "#ffc107" }}
+                                  onClick={() => onEdit(item)}
+                                  title="Editar"
+                                />
+                                <FaTrash
+                                  size={18}
+                                  style={{ cursor: "pointer", color: "#dc3545" }}
+                                  onClick={() => onDelete(item)}
+                                  title="Excluir"
+                                />
+                              </div>
+                            ) : (
+                              item[col.field]
+                            )}
+                          </td>
+                        ))}
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </Table>
+            </div>
             <div className="d-flex justify-content-between align-items-center">
               <div>
                 <span>
