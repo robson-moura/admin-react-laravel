@@ -1,175 +1,121 @@
-import { Col, Container, Row } from "react-bootstrap";
-import StatsCard from "@/components/StatsCard/StatsCard";
-import Earning from "@/components/Earning/Earning";
-import Download from "@/components/Download/Download";
-import Revenue from "@/components/Revenue/Revenue";
-import { Stats, StatsTab } from "@/components/Stats/Stats";
-import SocialCounter from "@/components/SocialCounter/SocialCounter";
-import Timeline from "@/components/Timeline/Timeline";
-import AnalyticsStats from "@/components/AnalyticsStats/AnalyticsStats";
-import WeatherStats from "@/components/WeatherStats/WeatherStats";
-import SocialStats from "@/components/SocialStats/SocialStats";
-import MonthlyStats from "@/components/MonthlyStats/MonthlyStats";
-import DeviceVisitorStats from "@/components/DeviceVisitorStats/DeviceVisitorStats";
-import Day from "@/components/Stats/Day";
-import Month from "@/components/Stats/Month";
-import Year from "@/components/Stats/Year";
+import React, { useEffect, useState } from "react";
+import { Col, Container, Row, Card, Table, Spinner, Alert } from "react-bootstrap";
+import { apiRequestWithToken } from "../utils/api";
+import { FaUser, FaUsers, FaStethoscope } from "react-icons/fa";
+
+const TotalCard = ({ icon, label, value, color }) => (
+  <Card className="shadow-sm border-0 text-center" style={{ background: "#f8f9fa" }}>
+    <Card.Body>
+      <div style={{ fontSize: 36, color: color, marginBottom: 8 }}>{icon}</div>
+      <div style={{ fontWeight: 700, fontSize: 32, color: "#222" }}>{value}</div>
+      <div style={{ color: "#555", fontSize: 16 }}>{label}</div>
+    </Card.Body>
+  </Card>
+);
 
 const Dashboard = () => {
-    return (
-        <Container fluid className="p-0">
-            {/* start revenue section */}
-            <Row className="gy-4 gx-4 mb-4">
-                <Col sm={12} md={6} lg={3} xl={3}>
-                    <StatsCard
-                        type="revenue-progressBar"
-                        bgColor="#5c6bc0"
-                        symbol="%"
-                        symbolPosition="right"
-                        counter={89}
-                        isCounter={true}
-                        title="Lorem ipsum..."
-                        progressPercent={25}
-                        description="Lorem ipsum dolor sit amet enim."
-                    />
-                </Col>
-                <Col sm={12} md={6} lg={3} xl={3}>
-                    <StatsCard
-                        type="revenue-progressBar"
-                        bgColor="#ffa726"
-                        counter={12124}
-                        isCounter={true}
-                        title="Lorem ipsum..."
-                        progressPercent={25}
-                        description="Lorem ipsum dolor sit amet enim."
-                    />
-                </Col>
-                <Col sm={12} md={6} lg={3} xl={3}>
-                    <StatsCard
-                        type="revenue-progressBar"
-                        bgColor="#ef5350"
-                        symbol="$"
-                        counter={9811100}
-                        isCounter={true}
-                        title="Lorem ipsum..."
-                        progressPercent={25}
-                        description="Lorem ipsum dolor sit amet enim."
-                    />
-                </Col>
-                <Col sm={12} md={6} lg={3} xl={3}>
-                    <StatsCard
-                        type="revenue-progressBar"
-                        bgColor="#42a5f5"
-                        symbol="$"
-                        counter={9811100}
-                        isCounter={true}
-                        title="Lorem ipsum..."
-                        progressPercent={25}
-                        description="Lorem ipsum dolor sit amet enim."
-                    />
-                </Col>
-            </Row>
-            {/* end revenue section */}
+  const [loading, setLoading] = useState(true);
+  const [usersCount, setUsersCount] = useState(0);
+  const [clientsCount, setClientsCount] = useState(0);
+  const [appointments, setAppointments] = useState([]);
 
-            {/* start analytics stats, weather stats, user stats, monthly stats & device visitor stats section */}
-            <Row className="gy-4 gx-4 mb-4">
-                <Col className="" md={12} lg={6}>
-                    <AnalyticsStats />
-                </Col>
-                <Col md={12} lg={6}>
-                    <Row className="gy-4 gx-4">
-                        <Col md={6}>
-                            <WeatherStats />
-                        </Col>
-                        <Col md={6}>
-                            <SocialStats />
-                        </Col>
-                    </Row>
-                    <Col className="mt-4">
-                        <Row className="gy-4 gx-4">
-                            <Col md={6}>
-                                <MonthlyStats />
-                            </Col>
-                            <Col md={6}>
-                                <DeviceVisitorStats />
-                            </Col>
-                        </Row>
-                    </Col>
-                </Col>
-            </Row>
-            {/* end analytics stats, weather stats, user stats, monthly stats & device visitor stats section */}
+  useEffect(() => {
+    setLoading(true);
+    Promise.all([
+      apiRequestWithToken("GET", "/users?limit=1"),
+      apiRequestWithToken("GET", "/clients?limit=1"),
+      apiRequestWithToken("GET", "/appointments?limit=10&status=scheduled"),
+    ])
+      .then(([usersRes, clientsRes, appointmentsRes]) => {
+        setUsersCount(usersRes?.total || 0);
+        setClientsCount(clientsRes?.total || 0);
+        setAppointments(appointmentsRes?.data || []);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
-            {/* start earning and download  revenue section */}
-            <Row className="gy-4 gx-4 mb-4">
-                <Col cmd={12} lg={6} xl={6}>
-                    <Earning />
-                </Col>
-                <Col cmd={12} lg={6} xl={6}>
-                    <Row className="gy-4 gx-4">
-                        <Col sm={12} md={6}>
-                            <Download />
-                        </Col>
-                        <Col sm={12} md={6}>
-                            <Revenue />
-                        </Col>
-                    </Row>
-                </Col>
-            </Row>
-            {/* end earning and download  revenue section */}
+  return (
+    <Container fluid className="p-0">
+      <Row className="gy-4 gx-4 mb-4">
+        <Col sm={12} md={4}>
+          <TotalCard
+            icon={<FaUser size={36} />}
+            label="Usuários cadastrados"
+            value={usersCount}
+            color="#5c6bc0"
+          />
+        </Col>
+        <Col sm={12} md={4}>
+          <TotalCard
+            icon={<FaUsers size={36} />}
+            label="Clientes cadastrados"
+            value={clientsCount}
+            color="#42a5f5"
+          />
+        </Col>
+        <Col sm={12} md={4}>
+          <TotalCard
+            icon={<FaStethoscope size={36} />}
+            label="Próximos Atendimentos"
+            value={appointments.length}
+            color="#ffa726"
+          />
+        </Col>
+      </Row>
 
-            {/* start user table, social counter & timeline section */}
-            <Row className="gy-4 gx-4">
-                <Col md={12} lg={8} xl={8}>
-                    <Col className="mb-4" sm={12}>
-                        <Stats activeTab="day">
-                            <StatsTab eventKey="day" title="Day">
-                                <Day />
-                            </StatsTab>
-                            <StatsTab eventKey="Month" title="Month">
-                                <Month />
-                            </StatsTab>
-                            <StatsTab eventKey="year" title="Year">
-                                <Year />
-                            </StatsTab>
-                        </Stats>
-                    </Col>
-                    <Row className="gy-4 gx-4">
-                        <Col sm={12} md={4}>
-                            <SocialCounter
-                                padding="28px"
-                                bgColor="#1DA1F2"
-                                icon="fa-brands fa-twitter"
-                                count="1875980"
-                                isCounter={true}
-                            />
-                        </Col>
-                        <Col sm={12} md={4}>
-                            <SocialCounter
-                                padding="28px"
-                                bgColor="#3B5998"
-                                icon="fa-brands fa-facebook-f"
-                                count="1875980"
-                                isCounter={true}
-                            />
-                        </Col>
-                        <Col sm={12} md={4}>
-                            <SocialCounter
-                                padding="28px"
-                                bgColor="#833AB4"
-                                icon="fa-brands fa-instagram"
-                                count="1875980"
-                                isCounter={true}
-                            />
-                        </Col>
-                    </Row>
-                </Col>
-                <Col md={12} lg={4} xl={4}>
-                    <Timeline />
-                </Col>
-            </Row>
-            {/* end user table, social counter & timeline section */}
-        </Container>
-    );
+      <Row className="gy-4 gx-4">
+        <Col sm={12}>
+          <Card className="shadow-sm border-0">
+            <Card.Body>
+              <h4 className="mb-4 text-primary">Próximos 10 Atendimentos</h4>
+              {loading ? (
+                <div className="text-center my-5">
+                  <Spinner animation="border" variant="primary" />
+                </div>
+              ) : appointments.length === 0 ? (
+                <Alert variant="info" className="text-center py-4 mb-0">
+                  Nenhum atendimento agendado.
+                </Alert>
+              ) : (
+                <div className="table-responsive">
+                  <Table striped hover>
+                    <thead>
+                      <tr>
+                        <th>Cliente</th>
+                        <th>Profissional</th>
+                        <th>Data</th>
+                        <th>Hora</th>
+                        <th>Procedimento</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {appointments.map((a) => (
+                        <tr key={a.id}>
+                          <td>{a.client?.full_name}</td>
+                          <td>{a.user?.nome || a.user?.name}</td>
+                          <td>{a.date_br || (a.date && a.date.substring(0, 10))}</td>
+                          <td>{a.time ? a.time.substring(0, 5) : ""}</td>
+                          <td>{a.procedure}</td>
+                          <td>
+                            {a.status === "scheduled"
+                              ? "Agendado"
+                              : a.status === "completed"
+                              ? "Concluído"
+                              : "Cancelado"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                </div>
+              )}
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
+  );
 };
 
 export default Dashboard;
