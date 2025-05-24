@@ -37,7 +37,7 @@ export const apiRequestWithToken = async (method, endpoint, data = null, setIsLo
     try {
         if (setIsLoading && typeof setIsLoading === "function") setIsLoading(true);
 
-        const token = localStorage.getItem("token");
+        const token = sessionStorage.getItem("token");
         const headers = {};
         headers["Accept"] = "application/json";
         
@@ -88,7 +88,7 @@ export const fetchPaginatedData = async (endpoint, offset = 0, limit = 10, setIs
             headers: {
                 "Accept": "application/json",
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
         });
 

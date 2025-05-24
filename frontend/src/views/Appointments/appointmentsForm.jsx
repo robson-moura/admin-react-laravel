@@ -38,6 +38,7 @@ const AppointmentsForm = () => {
   const [showWebcam, setShowWebcam] = useState(false);
   const [photoPreview, setPhotoPreview] = useState("");
   const [afterPhotoPreview, setAfterPhotoPreview] = useState("");
+  const [expandedPhoto, setExpandedPhoto] = useState(null);
   const webcamRef = useRef(null);
   const fileInputRef = useRef(null);
   const afterFileInputRef = useRef(null);
@@ -74,15 +75,28 @@ const AppointmentsForm = () => {
     });
   }, []);
 
-  // Preencher data da URL ao montar
+  // Preencher data e hora da URL ao montar
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const dateFromUrl = params.get("date");
     if (dateFromUrl && !isEditMode && !isViewMode) {
-      setAppointmentData((prev) => ({
-        ...prev,
-        date: dateFromUrl,
-      }));
+      // Tenta converter para data e hora separadas
+      const dateObj = new Date(dateFromUrl);
+      if (!isNaN(dateObj.getTime())) {
+        const dateStr = dateObj.toISOString().slice(0, 10); // yyyy-mm-dd
+        const timeStr = dateObj.toTimeString().slice(0, 5); // HH:MM
+        setAppointmentData((prev) => ({
+          ...prev,
+          date: dateStr,
+          time: timeStr,
+        }));
+      } else {
+        // fallback: só preenche a data se não conseguir converter
+        setAppointmentData((prev) => ({
+          ...prev,
+          date: dateFromUrl,
+        }));
+      }
     }
   }, [location.search, isEditMode, isViewMode]);
 
@@ -301,7 +315,7 @@ const AppointmentsForm = () => {
                     <option value="">Selecione</option>
                     {users.map((u) => (
                       <option key={u.id} value={u.id}>
-                        {u.nome}
+                        {u.name}
                       </option>
                     ))}
                   </Form.Select>
@@ -430,7 +444,11 @@ const AppointmentsForm = () => {
                         borderRadius: 8,
                         border: "1px solid #ccc",
                         marginRight: 10,
+                        cursor: photoPreview ? "pointer" : "default",
+                        transition: "box-shadow 0.2s",
+                        boxShadow: photoPreview ? "0 0 4px #888" : "none",
                       }}
+                      onClick={() => photoPreview && setExpandedPhoto(photoPreview)}
                     />
                     {!isViewMode && (
                       <>
@@ -475,7 +493,11 @@ const AppointmentsForm = () => {
                         borderRadius: 8,
                         border: "1px solid #ccc",
                         marginRight: 10,
+                        cursor: afterPhotoPreview ? "pointer" : "default",
+                        transition: "box-shadow 0.2s",
+                        boxShadow: afterPhotoPreview ? "0 0 4px #888" : "none",
                       }}
+                      onClick={() => afterPhotoPreview && setExpandedPhoto(afterPhotoPreview)}
                     />
                     {!isViewMode && (
                       <>
@@ -563,6 +585,16 @@ const AppointmentsForm = () => {
             Capturar Foto
           </Button>
         </Modal.Footer>
+      </Modal>
+
+      <Modal show={!!expandedPhoto} onHide={() => setExpandedPhoto(null)} centered size="lg">
+        <Modal.Body className="text-center p-0" style={{ background: "#222" }}>
+          <img
+            src={expandedPhoto}
+            alt="Foto expandida"
+            style={{ maxWidth: "100%", maxHeight: "80vh", margin: "auto", display: "block" }}
+          />
+        </Modal.Body>
       </Modal>
     </Container>
   );

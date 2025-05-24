@@ -3,6 +3,10 @@ import { Table, Button, Spinner, Card } from "react-bootstrap";
 import { fetchPaginatedData } from "../utils/api";
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa"; // Importa os ícones
 
+function getNestedValue(obj, path) {
+  return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+}
+
 const PaginatedTable = ({ endpoint, filters, onEdit, onDelete, onView}) => {
   const [data, setData] = useState([]);
   const [columns, setColumns] = useState([]);
@@ -113,7 +117,7 @@ const PaginatedTable = ({ endpoint, filters, onEdit, onDelete, onView}) => {
                                 />
                               </div>
                             ) : (
-                              item[col.field]
+                              getNestedValue(item, col.field)
                             )}
                           </td>
                         ))}

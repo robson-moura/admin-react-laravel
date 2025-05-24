@@ -12,7 +12,7 @@ const UserProfile = () => {
     const handleLogout = async () => {
         try {
             await apiRequestWithToken("POST", "/logout", null, setIsLoading); // Passa o setIsLoading
-            localStorage.removeItem("token");
+            sessionStorage.removeItem("token");
             navigate("/login");
         } catch (error) {
             console.error("Erro ao fazer logout:", error.message);
@@ -24,24 +24,15 @@ const UserProfile = () => {
             <Nav className="p-0 flex-column">
                 <Nav.Link href="#" className={styles.menu}>
                     <i className="fa fa-user"></i>
-                    <span>My Profile</span>
-                </Nav.Link>
-                <Nav.Link href="#" className={styles.menu}>
-                    <i className="fa-solid fa-bell"></i>
-                    <span>Notifications</span>
-                    <span className={`${styles.count} bg-danger`}>13</span>
-                </Nav.Link>
-                <Nav.Link href="#" className={styles.menu}>
-                    <i className="fa-solid fa-gear"></i>
-                    <span>Settings</span>
-                </Nav.Link>
+                    <span>Meu Perfil</span>
+                </Nav.Link>    
                 <Nav.Link
                     href="#"
                     className={styles.menu}
                     onClick={handleLogout} // Chama a função de logout
                 >
                     <i className="fa-solid fa-right-from-bracket"></i>
-                    <span>Logout</span>
+                    <span>Sair</span>
                 </Nav.Link>
             </Nav>
         </div>

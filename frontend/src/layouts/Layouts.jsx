@@ -15,6 +15,9 @@ import {
 import lightLogo from "../assets/image/light-logo.png";
 import lightMini from "../assets/image/light-mini.png";
 import userImg from "../assets/image/admin.jpg";
+console.log(sessionStorage.getItem("user_photo"));
+const userName = sessionStorage.getItem("user_name") || "Usuário";
+const userPhoto = sessionStorage.getItem("user_photo") || "/default-avatar.png";
 
 const Layouts = () => {
     const [selectSize, setSelectSize] = useState(null);
@@ -56,9 +59,8 @@ const Layouts = () => {
                     </MenuItem>
                 </Menu>
                 <SidenavUser
-                    userImg={userImg}
-                    userName="Olivia Rhye"
-                    userEmail="olivia@reactadmin.com"
+                    userImg={userPhoto}
+                    userName={userName}
                 />
             </Sidebar>
             <div

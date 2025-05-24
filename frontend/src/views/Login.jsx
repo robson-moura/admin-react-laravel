@@ -19,9 +19,13 @@ const Login = () => {
             const data = await apiRequest("POST", "/login", { email, password });
 
             console.log("Login successful:", data);
+            console.log(data.user?.photo);
+            // Salva token e dados do usuário na sessionStorage
+            sessionStorage.setItem("token", data.token);
+            sessionStorage.setItem("user_name", data.user?.name || "");
+            sessionStorage.setItem("user_id", data.user?.id || "");
+            sessionStorage.setItem("user_photo", data.user?.photo || "");
 
-            // Exemplo: Salvar token no localStorage e redirecionar
-            localStorage.setItem("token", data.token);
             navigate("/dashboard"); // Redireciona para o dashboard
         } catch (err) {
             setError(err.message);

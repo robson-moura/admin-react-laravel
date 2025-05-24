@@ -7,6 +7,7 @@ import Message from "./Message/Message";
 import UserProfile from "./UserProfile/UserProfile";
 import styles from "@/assets/scss/Navbar.module.scss";
 import profile from "../../assets/image/admin.jpg";
+const userPhoto = sessionStorage.getItem("user_photo") || "/default-avatar.png";
 
 const Navbar = () => {
     const [openNotification, setOpenNotification] = useState(false);
@@ -95,7 +96,7 @@ const Navbar = () => {
                                     setOpenNotification(false);
                                 }}
                             >
-                                <img src={profile} alt="uesr" />
+                                <img src={userPhoto} alt="uesr" />
                             </a>
                         </div>
                         {openUser ? (

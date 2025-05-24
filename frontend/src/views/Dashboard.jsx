@@ -19,6 +19,9 @@ const Dashboard = () => {
   const [clientsCount, setClientsCount] = useState(0);
   const [appointments, setAppointments] = useState([]);
 
+  // Pegue o nome do usuário da sessionStorage
+  const userName = sessionStorage.getItem("user_name") || "Usuário";
+
   useEffect(() => {
     setLoading(true);
     Promise.all([
@@ -36,6 +39,13 @@ const Dashboard = () => {
 
   return (
     <Container fluid className="p-0">
+      <Row>
+        <Col>
+          <h2 className="mb-4" style={{ color: "#222", fontWeight: 700 }}>
+            BEM VINDO, {userName}
+          </h2>
+        </Col>
+      </Row>
       <Row className="gy-4 gx-4 mb-4">
         <Col sm={12} md={4}>
           <TotalCard
@@ -98,11 +108,7 @@ const Dashboard = () => {
                           <td>{a.time ? a.time.substring(0, 5) : ""}</td>
                           <td>{a.procedure}</td>
                           <td>
-                            {a.status === "scheduled"
-                              ? "Agendado"
-                              : a.status === "completed"
-                              ? "Concluído"
-                              : "Cancelado"}
+                            {a.status}
                           </td>
                         </tr>
                       ))}
