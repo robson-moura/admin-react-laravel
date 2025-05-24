@@ -74,4 +74,15 @@ class Appointment extends Model
         // Gera a URL completa
         return url($value);
     }
+
+    // Status em português para listagem
+    public function getStatusAttribute($value)
+    {
+        $map = [
+            'scheduled' => 'Agendado',
+            'completed' => 'Concluído',
+            'canceled'   => 'Cancelado',
+        ];
+        return $map[$value] ?? ucfirst($value);
+    }
 }

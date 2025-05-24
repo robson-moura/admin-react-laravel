@@ -69,4 +69,15 @@ class Client extends Model
         return url($value);
     }
 
+    public function getStatusAttribute($value)
+    {
+        // Tradução simples dos status
+        $map = [
+            'active' => 'Ativo',
+            'inactive' => 'Inativo',
+            'pending' => 'Pendente',
+            'canceled' => 'Cancelado',
+        ];
+        return $map[$value] ?? ucfirst($value);
+    }
 }

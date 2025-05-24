@@ -90,6 +90,7 @@ class AuthController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'photo' => $user->photo,
                 'created_at' => $user->created_at,
                 'updated_at' => $user->updated_at,
             ],

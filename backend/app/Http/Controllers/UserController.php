@@ -41,45 +41,34 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        // Obtém os parâmetros de limite e deslocamento da requisição
-        $limit = $request->get('limit', 10); // Número de registros por página (padrão: 10)
-        $offset = $request->get('offset', 0); // Deslocamento inicial (padrão: 0)
-    
-        // Obtém os filtros da requisição
+        $limit = $request->get('limit', 10);
+        $offset = $request->get('offset', 0);
+
         $filters = [
             'name' => $request->get('name'),
+            'cpf' => $request->get('cpf'),
             'email' => $request->get('email'),
+            'phone' => $request->get('phone'),
+            'status' => $request->get('status'),
         ];
-    
-        // Chama o método da UserRepository para buscar os dados
+
         $result = $this->userRepository->getFilteredUsers($filters, $limit, $offset);
-    
-        // Mapeamento manual dos dados
-        $mappedUsers = $result['users']->map(function ($user) {
-            return [
-                'id' => $user->id,
-                'nome' => $user->name,             // 'name' mapeado para 'nome'
-                'cpf' => $user->cpf,               // 'cpf' permanece igual
-                'telefone' => $user->phone,        // 'phone' mapeado para 'telefone'
-                'e-mail' => $user->email,           // 'email' permanece igual
-            ];
-        });
-    
-        // Define as colunas dinamicamente com base nos atributos do modelo
-        $columns = collect($mappedUsers->first())->keys()->map(function ($key) {
-            return [
-                'label' => ucfirst(str_replace('_', ' ', $key)), // Formata o nome da coluna
-                'field' => $key,
-            ];
-        });
-    
-        // Retorna os dados no formato esperado pelo frontend
+
+        $columns = [
+            ['label' => 'Nome', 'field' => 'name'],
+            ['label' => 'CPF', 'field' => 'cpf'],
+            ['label' => 'Telefone', 'field' => 'phone'],
+            ['label' => 'E-mail', 'field' => 'email'],
+            ['label' => 'Status', 'field' => 'status'],
+            ['label' => 'Data Cadastro', 'field' => 'created_at'],
+        ];
+
         return response()->json([
-            'data' => $mappedUsers, // Dados mapeados
-            'columns' => $columns,  // Colunas
-            'total' => $result['total'], // Total de registros
-            'offset' => $offset,   // Deslocamento atual
-            'limit' => $limit,     // Número de registros por página
+            'data' => $result['users'],
+            'columns' => $columns,
+            'total' => $result['total'],
+            'offset' => $offset,
+            'limit' => $limit,
         ]);
     }
 

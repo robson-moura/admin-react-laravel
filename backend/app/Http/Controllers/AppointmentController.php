@@ -30,7 +30,7 @@ class AppointmentController extends Controller
 
         $columns = [
             ['label' => 'Cliente', 'field' => 'client.full_name'],
-            ['label' => 'Profissional', 'field' => 'user.nome'],
+            ['label' => 'Profissional', 'field' => 'user.name'],
             ['label' => 'Data', 'field' => 'date_br'],
             ['label' => 'Hora', 'field' => 'time'],
             ['label' => 'Procedimento', 'field' => 'procedure'],
